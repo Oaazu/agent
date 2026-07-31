@@ -3,34 +3,21 @@ from dotenv import load_dotenv
 load_dotenv()
 
 from langchain.agents import create_agent
-# ...rest of your file unchanged
-from langchain.agents import create_agent
-
-FAKE_INVENTORY = {"notebooks": 12, "pens": 0, "staplers": 3}
-
-def check_stock(item: str) -> str:
-    """Return how many units of a given item are currently in stock.
-    
-    Args:
-        item: The product name to look up,  e.g. "pens"."""
-
-    count = FAKE_INVENTORY.get(item.lower())
-    if count is None:
-        return f"'{item}' is not a tracked product."
-    return f"There are {count} units of {item} in stock."
+from yttools import search_youtube, get_video_stats
 
 agent = create_agent(
     model="anthropic:claude-haiku-4-5-20251001",
-    tools=[check_stock],
+    tools=[search_youtube, get_video_stats],
     system_prompt=(
-        "You are a helpful inventory assistant.  "
-        "Use your tools to answer questions about stock levels."
+        "You are a YouTube research assistant. "
+        "Use search_youtube to find videos, then get_video_stats to look up "
+        "how popular specific videos are. Answer the user's question based on "
+        "what you find."
     ),
 )
 
 if __name__ == "__main__":
-    result = agent.invoke(
-        {"messages": [{"role": "user", "content": "Do we have any pens left in stock?"}]}
-    )
+    question = "Find some popular Python tutorial videos and tell me which has the most views."
+    result = agent.invoke({"messages": [{"role": "user", "content": question}]})
     for m in result["messages"]:
         m.pretty_print()
