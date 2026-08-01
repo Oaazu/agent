@@ -62,3 +62,35 @@ def get_video_stats(video_id: str) ->str:
 if __name__ == "__main__":
     print(get_video_stats("kqtD5dpn9C8"))
     
+def compare_videos(video_ids: list[str]) -> str:
+    """Compare several Youtube videos side  by side on views, likes, and engagement.
+    
+    Use this when the user wants to compare multiple videos or find what several top videos have in common. Pass a list of video_ids from search_youtube.
+    Returns a structured comparison including a like-to-view engagement ratio for each video.
+    
+    Args:
+    video_ids: a list of IDs, e.g. ["kqtD5dpn9C8", "_uQrJ0TkZlc"].
+    """
+    youtube = build("youtube", "V3", developerKey=os.getenv("YOUTUBE_API_KEY"))
+    request = youtube.videos().list(
+        part="snippet,statistics", id=",".join(video_ids)
+    )
+    response = request.execute()
+
+    if not response["items"]:
+        return "No videos found for the given IDs."
+
+    lines = ["Comparison: "]
+    for item in response["items"]:
+        title = item["snippet"]["title"].replace("&amp;", "&")
+        channel = item["snippet"]["channelTitle"]
+        published = item["snippet"]["publishedAt"][:10]
+        views =int(item["statistics"].get("viewCount", 0))
+        likes = int(item["statistics"].get("likeCount", 0))
+        ratio = (likes / views * 100) if views else 0
+        lines.append(
+            f"- {title} | channel: {channel} | views: {views} | likes: {likes} | "
+            f"engagement ratio: {ratio:.2f}% | published: {published}"
+        )
+    return "\n".join(lines)
+
