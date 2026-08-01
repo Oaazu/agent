@@ -15,7 +15,7 @@ def search_youtube(query: str) -> str:
         query: the search for, e.g. "Machine learning tutorials".
 
     """
-    youtube = build("youtube", "v3", developerKey=os.getenv("YOUTUBE_API_KEY"))
+    youtube = build("youtube", "v3", developerKey=os.getenv("YOUTUBE_API_KEY"), static_discovery=True)
     request = youtube.search().list(
         part ="snippet", q=query, maxResults=5, type="video"
     )
@@ -40,7 +40,7 @@ def get_video_stats(video_id: str) ->str:
     Args:
         video_id: the ID of one video, e.g. "ktqD5dpn9c8".
     """
-    youtube = build("youtube", "v3", developerKey=os.getenv("YOUTUBE_API_KEY"))
+    youtube = build("youtube", "v3", developerKey=os.getenv("YOUTUBE_API_KEY"), static_discovery=True)
     request = youtube.videos().list(
         part="snippet,statistics", id=video_id
     )
