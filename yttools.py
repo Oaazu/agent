@@ -71,7 +71,7 @@ def compare_videos(video_ids: list[str]) -> str:
     Args:
     video_ids: a list of IDs, e.g. ["kqtD5dpn9C8", "_uQrJ0TkZlc"].
     """
-    youtube = build("youtube", "V3", developerKey=os.getenv("YOUTUBE_API_KEY"))
+    youtube = build("youtube", "v3", developerKey=os.getenv("YOUTUBE_API_KEY"))
     request = youtube.videos().list(
         part="snippet,statistics", id=",".join(video_ids)
     )
